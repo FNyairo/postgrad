@@ -24,10 +24,14 @@ export const studentRepo = {
     }
   },
   async list(params: { skip?: number; take?: number } = {}) {
+    // exactOptionalPropertyTypes (tsconfig.base.json) treats "property
+    // omitted" and "property present but undefined" as different types.
+    // Prisma's FindManyArgs wants the former, so skip is spread in only
+    // when it's actually a number, never passed through as `skip: undefined`.
     return prisma.student.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: "desc" },
-      skip: params.skip,
+      ...(params.skip !== undefined ? { skip: params.skip } : {}),
       take: params.take ?? 50,
     });
   },

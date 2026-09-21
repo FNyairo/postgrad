@@ -23,7 +23,10 @@ export async function POST(req: NextRequest) {
 
   const parsed = studentRegistrationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Validation failed.", issues: parsed.data ?? parsed.error.flatten() }, { status: 422 });
+    // TypeScript narrows `parsed` to the failure branch here — it has no
+    // `.data` at all, only `.error`. (Caught by npm run typecheck, not by
+    // `next build`'s narrower type-check scope — worth running both.)
+    return NextResponse.json({ error: "Validation failed.", issues: parsed.error.flatten() }, { status: 422 });
   }
 
   const input = parsed.data;
