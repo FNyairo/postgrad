@@ -2,10 +2,13 @@
   "name": "@pgsts/core",
   "private": true,
   "version": "0.1.0",
-  "description": "Domain rules. No next/*, no @prisma/client imports — depends on ports (interfaces) only.",
+  "description": "Domain rules. No next/*, no @prisma/client imports \u2014 depends on ports (interfaces) only.",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "devDependencies": {
     "vitest": "^2.1.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
   }
 }

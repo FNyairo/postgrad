@@ -2,8 +2,13 @@
   "name": "@pgsts/schema",
   "private": true,
   "version": "0.1.0",
-  "description": "Zod schemas shared by the client form island and the route handler — one source of truth for validation.",
+  "description": "Zod schemas shared by the client form island and the route handler \u2014 one source of truth for validation.",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "dependencies": { "zod": "^3.23.0" }
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
 }
