@@ -4,6 +4,9 @@ export const staffUserRepo = {
   async findByEmail(email: string) {
     return prisma.staffUser.findUnique({ where: { email } });
   },
+  async findById(id: string) {
+    return prisma.staffUser.findUnique({ where: { id } });
+  },
   async recordFailedLogin(id: string, failedLogins: number, lockedUntil: Date | null) {
     return prisma.staffUser.update({
       where: { id },

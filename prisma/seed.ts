@@ -1,15 +1,33 @@
 /**
- * First coordinator account + starter taxonomy suggestions.
+ * Two staff accounts + starter taxonomy suggestions.
  *
  * Safe to re-run: everything here is an upsert, keyed on the natural unique
  * constraint (StaffUser.email; Taxonomy's [kind, slug]).
  *
- * Coordinator credentials:
- *   - If SEED_COORDINATOR_EMAIL / SEED_COORDINATOR_PASSWORD are set, those
- *     are used (and the password is never printed).
- *   - Otherwise a random password is generated and printed ONCE to the
- *     console. mustChangePassword is always true on a freshly seeded
- *     account, so whoever logs in first is forced to set their own.
+ * Accounts:
+ *   - SUPER_ADMIN — all rights (see packages/core/src/auth/permissions.ts):
+ *     view, export, edit students, and manage other staff accounts. The
+ *     schema has no "account management" UI/route yet — that capability
+ *     exists in the permission function but nothing calls it yet.
+ *   - COORDINATOR — view, export, and edit students (with a mandatory
+ *     reason, per FIX F1), but cannot manage other staff accounts. This is
+ *     the closest existing role to "mid-level admin, view/export/reports" —
+ *     note it's actually BROADER than pure view+export, since it also
+ *     carries the coordinator's edit/soft-delete rights the original spec
+ *     gives that role. There is no narrower "view+export only, no edit"
+ *     role in the schema; ask if you want one added as an actual role
+ *     rather than overloading COORDINATOR.
+ *   - CHAIRPERSON is deferred (see institution.ts, chairpersonEnabled) —
+ *     not seeded.
+ *
+ * "Generate some reports" is only a raw CSV export right now
+ * (/api/v1/export) — there is no aggregated/summary report view yet.
+ *
+ * Credentials: SEED_SUPER_ADMIN_EMAIL / SEED_SUPER_ADMIN_PASSWORD and
+ * SEED_COORDINATOR_EMAIL / SEED_COORDINATOR_PASSWORD override the
+ * defaults. Any password not supplied is randomly generated and printed
+ * ONCE to the console, never stored anywhere else. mustChangePassword is
+ * always true on a freshly seeded account.
  *
  * Taxonomy rows below are starter suggestions to populate the registration
  * form's comboboxes on day one — NOT the department's confirmed programme
@@ -22,32 +40,60 @@ import { argon2Hasher } from "@pgsts/adapter-argon2";
 
 const prisma = new PrismaClient();
 
-async function seedCoordinator() {
-  const email = process.env.SEED_COORDINATOR_EMAIL ?? "coordinator@embuni.ac.ke";
-  const providedPassword = process.env.SEED_COORDINATOR_PASSWORD;
-  const password = providedPassword ?? randomBytes(12).toString("base64url");
+type SeedAccount = {
+  role: "SUPER_ADMIN" | "COORDINATOR";
+  name: string;
+  envEmailKey: string;
+  envPasswordKey: string;
+  defaultEmail: string;
+};
 
-  const passwordHash = await argon2Hasher.hash(password);
+const STAFF_ACCOUNTS: SeedAccount[] = [
+  {
+    role: "SUPER_ADMIN",
+    name: "System Administrator",
+    envEmailKey: "SEED_SUPER_ADMIN_EMAIL",
+    envPasswordKey: "SEED_SUPER_ADMIN_PASSWORD",
+    defaultEmail: "admin@embuni.ac.ke",
+  },
+  {
+    role: "COORDINATOR",
+    name: "Postgraduate Coordinator",
+    envEmailKey: "SEED_COORDINATOR_EMAIL",
+    envPasswordKey: "SEED_COORDINATOR_PASSWORD",
+    defaultEmail: "coordinator@embuni.ac.ke",
+  },
+];
 
-  await prisma.staffUser.upsert({
-    where: { email },
-    update: {}, // do not overwrite an existing account's password on re-run
-    create: {
-      email,
-      name: "Postgraduate Coordinator",
-      role: "COORDINATOR",
-      passwordHash,
-      mustChangePassword: true,
-    },
-  });
+async function seedStaffAccounts() {
+  for (const account of STAFF_ACCOUNTS) {
+    const email = process.env[account.envEmailKey] ?? account.defaultEmail;
+    const providedPassword = process.env[account.envPasswordKey];
+    const password = providedPassword ?? randomBytes(12).toString("base64url");
 
-  console.log(`\nCoordinator account ready: ${email}`);
-  if (!providedPassword) {
-    console.log(`Temporary password (shown once, not stored anywhere): ${password}`);
-    console.log("mustChangePassword is set — this cannot be used past first login without changing it.\n");
-  } else {
-    console.log("Password taken from SEED_COORDINATOR_PASSWORD.\n");
+    const passwordHash = await argon2Hasher.hash(password);
+
+    await prisma.staffUser.upsert({
+      where: { email },
+      update: {}, // do not overwrite an existing account's password on re-run
+      create: {
+        email,
+        name: account.name,
+        role: account.role,
+        passwordHash,
+        mustChangePassword: true,
+      },
+    });
+
+    console.log(`\n${account.role} account ready: ${email}`);
+    if (!providedPassword) {
+      console.log(`Temporary password (shown once, not stored anywhere): ${password}`);
+      console.log("mustChangePassword is set — cannot be used past first login without changing it.");
+    } else {
+      console.log(`Password taken from ${account.envPasswordKey}.`);
+    }
   }
+  console.log("");
 }
 
 type TaxonomySeed = {
@@ -97,7 +143,7 @@ async function seedTaxonomy() {
 }
 
 async function main() {
-  await seedCoordinator();
+  await seedStaffAccounts();
   await seedTaxonomy();
 }
 

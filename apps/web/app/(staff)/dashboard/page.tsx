@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import { getCurrentStaffSession, destroyStaffSession } from "../../../lib/session";
+import { canExportRegister } from "@pgsts/core";
+import { getCurrentStaffUser, destroyStaffSession } from "../../../lib/session";
 import { studentRepo } from "@pgsts/adapter-prisma";
 
 export default async function DashboardPage() {
-  const session = await getCurrentStaffSession();
-  if (!session) redirect("/login");
+  const staffUser = await getCurrentStaffUser();
+  if (!staffUser) redirect("/login");
 
   const [students, total] = await Promise.all([
     studentRepo.list({ take: 50 }),
@@ -14,10 +15,20 @@ export default async function DashboardPage() {
   return (
     <main style={{ fontFamily: "system-ui", padding: "2rem" }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <h1>Postgraduate register</h1>
-        <form action={async () => { "use server"; await destroyStaffSession(); redirect("/login"); }}>
-          <button type="submit">Sign out</button>
-        </form>
+        <div>
+          <h1>Postgraduate register</h1>
+          <p style={{ color: "#666", margin: 0 }}>
+            Signed in as {staffUser.name} &middot; <code>{staffUser.role}</code>
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+          {canExportRegister(staffUser.role) && (
+            <a href="/api/v1/export">Export CSV</a>
+          )}
+          <form action={async () => { "use server"; await destroyStaffSession(); redirect("/login"); }}>
+            <button type="submit">Sign out</button>
+          </form>
+        </div>
       </header>
 
       <p>{total} registered students</p>
@@ -25,10 +36,9 @@ export default async function DashboardPage() {
       {/*
         Table only for now — search, filter, the detail drawer, and edit-
         with-reason (FIX F1) are the rest of build-order step 6 and are not
-        in this pass. Charts are dynamically imported per
-        docs/kickoff/02-repo-structure.md ("never in the student bundle") —
-        not added here since this route isn't the student-facing bundle
-        anyway, but keeping the pattern consistent.
+        in this pass. "Generate some reports" beyond a raw CSV export (e.g.
+        counts by programme/stage) is not built yet either — see project
+        status doc.
       */}
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "1.5rem" }}>
         <thead>

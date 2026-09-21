@@ -2,7 +2,7 @@ import "server-only";
 import { cookies, headers } from "next/headers";
 import { createHash } from "node:crypto";
 import { issueSession, isSessionValid, hashSessionToken } from "@pgsts/core";
-import { sessionRepo } from "@pgsts/adapter-prisma";
+import { sessionRepo, staffUserRepo } from "@pgsts/adapter-prisma";
 
 export const SESSION_COOKIE = "pgsts_session";
 
@@ -45,6 +45,22 @@ export async function getCurrentStaffSession() {
 
   await sessionRepo.touch(tokenHash);
   return record;
+}
+
+/**
+ * Session + the StaffUser it belongs to, in one call — every page/route
+ * that needs to check a role (canExportRegister, canEditStudents, ...)
+ * wants both, and a disabled/deleted user should invalidate the session
+ * even if the session row itself is still technically unexpired.
+ */
+export async function getCurrentStaffUser() {
+  const session = await getCurrentStaffSession();
+  if (!session) return null;
+
+  const user = await staffUserRepo.findById(session.userId);
+  if (!user || user.disabledAt) return null;
+
+  return user;
 }
 
 export async function destroyStaffSession() {
