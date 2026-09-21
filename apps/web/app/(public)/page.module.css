@@ -1,0 +1,60 @@
+.details {
+  padding-block: clamp(20px, 5vw, 40px);
+}
+
+.detailsInner {
+  width: var(--wide);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: grid;
+}
+
+.newsletterForm {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .newsletterForm {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+  .newsletterLabel {
+    grid-column: 1 / -1;
+  }
+}
+
+.newsletterLabel {
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.newsletterInput {
+  font: inherit;
+  font-size: 1rem;
+  padding-inline: 14px;
+  min-height: var(--tap-target);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  width: 100%;
+}
+.newsletterInput:focus { border-color: var(--forest); }
+
+.newsletterSubmit {
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--step--1);
+  padding-inline: 20px;
+  min-height: var(--tap-target);
+  background: var(--forest);
+  color: #FFFFFF;
+  border: 1px solid var(--forest);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color var(--motion-duration) var(--motion-ease);
+}
+.newsletterSubmit:hover { background: var(--forest-2); }

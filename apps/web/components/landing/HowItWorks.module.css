@@ -1,0 +1,59 @@
+/* How It Works — 3 MD3 filled cards. Spec: 12dp radius, 16dp horizontal
+   padding, 8dp gap, start-aligned labels. */
+
+.section {
+  padding-block: clamp(28px, 6vw, 48px);
+}
+
+.inner {
+  width: var(--wide);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: grid;
+  gap: var(--card-gap);
+}
+
+.heading {
+  font-size: var(--step-2);
+  margin-bottom: 4px;
+}
+
+.grid {
+  display: grid;
+  gap: var(--card-gap);
+}
+
+@media (min-width: 680px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* MD3 filled card: tonal surface, no border, low elevation via shadow. */
+.card {
+  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  padding-inline: var(--card-padding-inline);
+  padding-block: 18px;
+  display: grid;
+  gap: 6px;
+  text-align: start;
+}
+
+.number {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--brass);
+}
+
+.title {
+  font-size: var(--step-1);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.body {
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  line-height: 1.55;
+}

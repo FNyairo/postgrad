@@ -1,0 +1,107 @@
+/* Hero — always visible, above the fold. Photo background (Franklin
+   preferred it over the flat-color version) with a dark gradient overlay
+   for text contrast, same treatment as the source preview
+   (docs/design/landing-preview.html .hero). fetchpriority="high" on the
+   <img> plus no client JS in this component keeps LCP reasonable despite
+   the photo. */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--forest);
+  color: #F4F6F3;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 22, 16, .30) 0%,
+    rgba(10, 22, 16, .58) 46%,
+    rgba(10, 22, 16, .86) 100%
+  );
+}
+
+.inner {
+  width: var(--wide);
+  margin-inline: auto;
+  padding-block: clamp(28px, 7vw, 64px);
+  padding-inline: 16px;
+  display: grid;
+  gap: 18px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: #C7D8CD;
+  margin: 0;
+}
+
+.headline {
+  font-size: var(--step-4);
+  color: #FFFFFF;
+  max-width: 17ch;
+}
+
+.subhead {
+  max-width: 52ch;
+  color: #DDE6DF;
+  font-size: var(--step-1);
+  line-height: 1.5;
+}
+
+.cta {
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--step-0);
+  letter-spacing: .01em;
+  padding-inline: 24px;
+  min-height: 52px;
+  width: 100%;
+  background: var(--brass);
+  color: #1A1204;
+  border: 1px solid var(--brass);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color var(--motion-duration) var(--motion-ease),
+    border-color var(--motion-duration) var(--motion-ease);
+}
+.cta:hover { background: #B9883A; border-color: #B9883A; }
+
+.trust {
+  font-size: var(--step--1);
+  color: #C7D8CD;
+  border-top: 1px solid rgba(244, 246, 243, .22);
+  padding-top: 14px;
+  max-width: 58ch;
+}
+.trust a {
+  color: #FFFFFF;
+  text-underline-offset: 3px;
+}
+
+@media (min-width: 480px) {
+  .cta { width: max-content; }
+}

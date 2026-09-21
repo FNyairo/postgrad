@@ -1,0 +1,137 @@
+/*
+ * Design tokens for the PGSTS web app.
+ *
+ * Ported as-is from the reviewed static preview
+ * (docs/design/landing-preview.html) — colors, radius, shadow, and the
+ * fluid type scale below are the department's actual approved palette,
+ * not a new invention. Nothing here is Google's literal Material color
+ * system; "MD3" in the landing-page brief refers to the interaction
+ * patterns (filled/outlined cards, expansion panels, filled buttons) —
+ * built below using these existing values.
+ *
+ * The --card-*, --tap-target, and --motion-* tokens ARE new: the source
+ * preview had no card component and no accordion, and the landing-page
+ * brief specifies exact numbers for both (12dp radius / 16dp padding /
+ * 8dp gap / 48x48 tap target / 200-300ms motion). Everything else here
+ * is a direct port.
+ */
+
+:root {
+  --paper: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface-2: #F0EFE8;
+  --ink: #14201A;
+  --ink-2: #4A5A52;
+  --ink-3: #6E7D74;
+  --forest: #1E4D3B;
+  --forest-2: #2C6B52;
+  --forest-ghost: #E7EEE9;
+  --brass: #9C6F25;
+  --brass-soft: #F3EADB;
+  --line: #DEDCD4;
+  --line-2: #C9C7BD;
+
+  --radius: 3px;
+  --shadow: 0 1px 2px rgba(20, 32, 26, .06), 0 8px 24px -12px rgba(20, 32, 26, .16);
+
+  --col: min(100%, 68ch);
+  --wide: min(100%, 1120px);
+
+  --step--1: clamp(.78rem, .76rem + .1vw, .84rem);
+  --step-0:  clamp(1rem, .97rem + .15vw, 1.08rem);
+  --step-1:  clamp(1.2rem, 1.12rem + .35vw, 1.4rem);
+  --step-2:  clamp(1.45rem, 1.3rem + .7vw, 1.9rem);
+  --step-3:  clamp(1.85rem, 1.55rem + 1.4vw, 2.7rem);
+  --step-4:  clamp(2.25rem, 1.7rem + 2.6vw, 3.9rem);
+
+  --font-serif: var(--next-font-newsreader), Georgia, "Times New Roman", serif;
+  --font-sans: var(--next-font-public-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--next-font-plex-mono), ui-monospace, monospace;
+
+  /* New: card + motion + tap-target tokens required by the landing-page
+     brief, not present in the source preview (which had no cards/accordion). */
+  --card-radius: 12px;
+  --card-padding-inline: 16px;
+  --card-gap: 8px;
+  --tap-target: 48px;
+  --motion-duration: 240ms;
+  --motion-ease: cubic-bezier(.2, 0, 0, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #101613;
+    --surface: #18201C;
+    --surface-2: #1E2723;
+    --ink: #E9EBE6;
+    --ink-2: #A3B2A8;
+    --ink-3: #84968B;
+    --forest: #62A588;
+    --forest-2: #7CBBA0;
+    --forest-ghost: #1B2B23;
+    --brass: #D9AC66;
+    --brass-soft: #2A2317;
+    --line: #2A342E;
+    --line-2: #3A463F;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #101613;
+  --surface: #18201C;
+  --surface-2: #1E2723;
+  --ink: #E9EBE6;
+  --ink-2: #A3B2A8;
+  --ink-3: #84968B;
+  --forest: #62A588;
+  --forest-2: #7CBBA0;
+  --forest-ghost: #1B2B23;
+  --brass: #D9AC66;
+  --brass-soft: #2A2317;
+  --line: #2A342E;
+  --line-2: #3A463F;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 1.14;
+  text-wrap: balance;
+  margin: 0;
+  letter-spacing: -.012em;
+}
+
+p { margin: 0; }
+a { color: inherit; }
+
+:where(a, button, input, summary):focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* WCAG 2.2 AA: every collapsible/button in the landing components inherits
+   this instead of redefining focus styling per component. */
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-duration: 0ms; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

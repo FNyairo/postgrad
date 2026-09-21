@@ -1,0 +1,59 @@
+/* Bottom CTA — inline filled card repeating the primary action, for
+   anyone who scrolled through the collapsibles without converting. */
+
+.section {
+  padding-block: clamp(28px, 6vw, 48px);
+}
+
+.card {
+  width: var(--wide);
+  margin-inline: auto;
+  background: var(--forest);
+  color: #F4F6F3;
+  border-radius: var(--card-radius);
+  padding-inline: var(--card-padding-inline);
+  padding-block: 28px;
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+
+.heading {
+  font-size: var(--step-2);
+  color: #FFFFFF;
+}
+
+.cta {
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--step-0);
+  letter-spacing: .01em;
+  padding-inline: 24px;
+  min-height: 52px;
+  width: 100%;
+  background: var(--brass);
+  color: #1A1204;
+  border: 1px solid var(--brass);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color var(--motion-duration) var(--motion-ease),
+    border-color var(--motion-duration) var(--motion-ease);
+}
+.cta:hover { background: #B9883A; border-color: #B9883A; }
+
+.trust {
+  font-size: var(--step--1);
+  color: #C7D8CD;
+}
+.trust a {
+  color: #FFFFFF;
+  text-underline-offset: 3px;
+}
+
+@media (min-width: 480px) {
+  .cta { width: max-content; }
+}
