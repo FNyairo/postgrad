@@ -5,3 +5,9 @@ dist/
 .env
 .env.local
 /prisma/*.db
+
+# Working/reference files — not part of the app, not for a public repo
+AdobeStock_*.jpeg
+/assets/_preview/
+/Claude outputs/
+PGSTS-Copy-Deck-for-Review.docx

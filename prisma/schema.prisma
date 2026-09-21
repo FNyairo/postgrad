@@ -1,0 +1,384 @@
+// PGSTS — Postgraduate Student Tracking System
+// Phase 1 schema. Target: MySQL 8.0 / MariaDB 10.6+ on cPanel.
+//
+// PORTABILITY NOTE
+// This schema deliberately avoids PostgreSQL-only Prisma features so that a
+// later move to Postgres is a provider swap plus a data migration, not a
+// redesign. Specifically: no scalar lists, no native arrays, no citext.
+// Every column type used here exists on both engines.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// STUDENT REGISTER
+// ---------------------------------------------------------------------------
+
+model Student {
+  id String @id @default(cuid())
+
+  // --- Section A: Biodata ---
+  fullName  String @db.VarChar(150)
+  regNumber String @unique @db.VarChar(50)
+  email     String @unique @db.VarChar(150) // unique per §8.6; collisions return
+  phone     String @db.VarChar(30)          // the same message as regNumber
+                                            // collisions (anti-enumeration)
+
+  // --- Section B: Academic information ---
+  // FIX F3: every taxonomy field stores BOTH the student's literal input and a
+  // normalised slug. The raw value is never discarded — it is what the student
+  // actually typed and is the source of truth for any later re-normalisation.
+  // The slug is what the dashboard filters and charts group by.
+  programme             String  @db.VarChar(150)
+  programmeSlug         String  @db.VarChar(150)
+  degreeLevel           String  @db.VarChar(80)
+  degreeLevelSlug       String  @db.VarChar(80)
+  yearAdmission         Int
+  programmeDurationYears Int?   @db.SmallInt // resolved from Taxonomy at submit;
+                                             // feeds the retention calculation
+
+  // --- Section C: Research information ---
+  researchTitle     String @db.Text
+  supervisors       String @db.VarChar(255)
+  researchStage     String @db.VarChar(120)
+  researchStageSlug String @db.VarChar(120)
+
+  // --- Lawful basis / notice record ---
+  // NOTE: named for an ACKNOWLEDGEMENT, not consent. See decision record Q1.
+  // If the department's DPO decides consent is the basis after all, rename
+  // these three columns in a single migration; nothing else changes.
+  noticeAcknowledgedAt DateTime
+  noticeVersion        String   @db.VarChar(20) // e.g. "privacy-v1.0-2026-09"
+  lawfulBasis          String   @db.VarChar(40) // recorded per row so a change
+                                                // of policy is auditable
+
+  // --- Retention (FIX F2) ---
+  // retentionUntil is always derived, never hand-entered. retentionBasis records
+  // which rule produced it so the value can be explained to a regulator.
+  graduatedAt    DateTime?
+  retentionUntil DateTime
+  retentionBasis String    @db.VarChar(60) // "derived:admission+duration+grace+5y"
+                                           // or "actual:graduation+5y"
+
+  // --- Provenance ---
+  // FIX F6: HMAC-SHA-256 with a server-side key, not SHA-256(ip + pepper).
+  // The IPv4 space is enumerable, so a keyed MAC is the correct construction.
+  submissionIpHash String  @db.VarChar(64)
+  userAgentHash    String? @db.VarChar(64)
+
+  // --- Mutation tracking (FIX F1) ---
+  // Phase 1 gives the coordinator edit and soft-delete rights, gated behind a
+  // mandatory reason. Deletions are soft so that an erasure can be reversed
+  // inside the grace window and so the audit trail stays intact.
+  lastEditedAt   DateTime?
+  lastEditedById String?   @db.VarChar(30)
+  deletedAt      DateTime?
+  deletedById    String?   @db.VarChar(30)
+  deletionReason String?   @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([programmeSlug])
+  @@index([degreeLevelSlug])
+  @@index([researchStageSlug])
+  @@index([yearAdmission])
+  @@index([createdAt])
+  @@index([retentionUntil]) // retention cron scans this
+  @@index([deletedAt])      // every list query filters deletedAt IS NULL
+  @@map("students")
+}
+
+// Seeded suggestion list behind the combobox on the public form (FIX F3).
+// Students are never restricted to these values — the list exists to make the
+// common case one tap, and to give the normaliser something to match against.
+model Taxonomy {
+  id        String       @id @default(cuid())
+  kind      TaxonomyKind
+  slug      String       @db.VarChar(150)
+  label     String       @db.VarChar(150)
+  // Newline-separated alternate spellings the normaliser matches against, e.g.
+  // "MEd\nM.Ed\nMasters in Education". Not a scalar list — MySQL portability.
+  aliases         String? @db.Text
+  durationYears   Int?    @db.SmallInt // PROGRAMME only; drives retention
+  sortOrder       Int     @default(0)
+  active          Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([kind, slug])
+  @@index([kind, active, sortOrder])
+  @@map("taxonomy")
+}
+
+enum TaxonomyKind {
+  PROGRAMME
+  DEGREE_LEVEL
+  RESEARCH_STAGE
+}
+
+// ---------------------------------------------------------------------------
+// STAFF AUTHENTICATION
+// ---------------------------------------------------------------------------
+
+model StaffUser {
+  id           String  @id @default(cuid())
+  email        String  @unique @db.VarChar(150)
+  name         String  @db.VarChar(150)
+  role         Role    @default(COORDINATOR)
+  passwordHash String  @db.VarChar(255) // Argon2id
+
+  // AES-256-GCM ciphertext, not the raw secret. On shared hosting this is the
+  // only meaningful at-rest protection available. See decision record Q2.
+  totpSecretEnc String?  @db.VarChar(255)
+  totpEnabled   Boolean  @default(false)
+
+  mustChangePassword Boolean   @default(true) // seed account lands here
+  failedLogins       Int       @default(0)
+  lockedUntil        DateTime?
+  lastLoginAt        DateTime?
+  disabledAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions      Session[]
+  recoveryCodes RecoveryCode[]
+  shareTokens   ShareToken[]   @relation("TokenCreator")
+
+  @@map("staff_users")
+}
+
+enum Role {
+  COORDINATOR
+  CHAIRPERSON
+  SUPER_ADMIN
+}
+
+// FIX F5: was `recoveryCodes String[]`, which is PostgreSQL-only in Prisma and
+// could not record which codes had been spent — though §5.3 requires them to be
+// single-use. One hashed row per code solves both problems.
+model RecoveryCode {
+  id       String    @id @default(cuid())
+  userId   String
+  codeHash String    @db.VarChar(255) // Argon2id, same as passwords
+  usedAt   DateTime?
+  createdAt DateTime @default(now())
+
+  user StaffUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, usedAt])
+  @@map("recovery_codes")
+}
+
+model Session {
+  id        String    @id // 32 random bytes, stored as its SHA-256 digest
+  userId    String
+  expiresAt DateTime  // absolute timeout
+  lastSeenAt DateTime @default(now()) // idle timeout is computed from this
+  ipHash    String    @db.VarChar(64)
+  userAgent String?   @db.VarChar(255)
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user StaffUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt]) // cron purge
+  @@map("sessions")
+}
+
+// ---------------------------------------------------------------------------
+// CHAIRPERSON SHARE TOKENS
+// ---------------------------------------------------------------------------
+
+model ShareToken {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique @db.VarChar(64) // SHA-256 of ≥32 random bytes
+  label       String    @db.VarChar(120)
+  role        Role      @default(CHAIRPERSON)
+  allowExport Boolean   @default(false)
+  expiresAt   DateTime
+  maxUses     Int?
+  useCount    Int       @default(0)
+  lastUsedAt  DateTime?
+  createdById String
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  createdBy StaffUser @relation("TokenCreator", fields: [createdById], references: [id])
+
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@map("share_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// DATA SUBJECT REQUESTS
+// ---------------------------------------------------------------------------
+
+// Not in the master prompt's data model, but §9 and §16 require a DSR page and
+// workflow with no table to run it on. Statutory clocks come from the Data
+// Protection (General) Regulations 2021 and are computed on creation:
+//   ACCESS        reg  9(4)  —  7 days
+//   RECTIFICATION reg 10(4)  — 14 days
+//   ERASURE       reg 12(3)  — 14 days
+//   PORTABILITY   reg 11(3)  — 30 days
+// OBJECTION has no fixed period in the regulations; we apply 14 days by policy.
+model DataSubjectRequest {
+  id   String  @id @default(cuid())
+  type DsrType
+
+  // Contact details are stored in plaintext by necessity — we have to be able
+  // to reply. They are minimised, access-controlled and deleted on closure plus
+  // the evidence-retention window.
+  requesterEmail String  @db.VarChar(150)
+  requesterName  String? @db.VarChar(150)
+  regNumber      String? @db.VarChar(50) // claimed; NOT trusted until verified
+
+  // Identity verification is mandatory before fulfilment. Without it this
+  // workflow is a data-exfiltration channel: anyone could request a copy of
+  // anyone else's record.
+  verifiedAt         DateTime?
+  verificationMethod String?   @db.VarChar(60)
+
+  status         DsrStatus @default(RECEIVED)
+  dueAt          DateTime  // computed from type at creation
+  resolvedAt     DateTime?
+  resolutionNote String?   @db.Text
+  handledById    String?   @db.VarChar(30)
+
+  requestIpHash String?  @db.VarChar(64)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status, dueAt]) // overdue-request dashboard widget
+  @@index([createdAt])
+  @@map("data_subject_requests")
+}
+
+enum DsrType {
+  ACCESS
+  RECTIFICATION
+  ERASURE
+  PORTABILITY
+  OBJECTION
+}
+
+enum DsrStatus {
+  RECEIVED
+  AWAITING_VERIFICATION
+  IN_PROGRESS
+  FULFILLED
+  REFUSED
+  WITHDRAWN
+}
+
+// ---------------------------------------------------------------------------
+// NEWSLETTER
+// ---------------------------------------------------------------------------
+
+model NewsletterSubscriber {
+  id       String  @id @default(cuid())
+  email    String  @unique @db.VarChar(150)
+  fullName String? @db.VarChar(150)
+  status   String? @db.VarChar(40) // student | alumni | staff | other
+
+  // Consent here is genuine consent — it is a real choice, separable from the
+  // register, and withdrawable without consequence. Regulation 15(1)(c)
+  // requires opt-in for direct marketing.
+  consentGivenAt DateTime
+  consentVersion String   @db.VarChar(20)
+  consentIpHash  String   @db.VarChar(64)
+
+  doubleOptInTokenHash String?   @db.VarChar(64)
+  doubleOptInSentAt    DateTime?
+  confirmedAt          DateTime?
+  unsubscribedAt       DateTime?
+  unsubscribeTokenHash String    @unique @db.VarChar(64)
+  suppressedUntil      DateTime? // 24-month suppression, then hard delete
+  source               String?   @db.VarChar(60)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([confirmedAt])
+  @@index([unsubscribedAt])
+  @@index([doubleOptInSentAt]) // 7-day purge of unconfirmed rows
+  @@index([suppressedUntil])
+  @@map("newsletter_subscribers")
+}
+
+// ---------------------------------------------------------------------------
+// AUDIT
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id        String  @id @default(cuid())
+  actorType String  @db.VarChar(20) // student | staff | token | system | public
+  actorId   String? @db.VarChar(30)
+  action    String  @db.VarChar(60) // student.create, student.update, auth.login,
+                                    // export.csv, token.access, dsr.fulfil, …
+  targetType String? @db.VarChar(40)
+  targetId   String? @db.VarChar(30)
+
+  // For student.update this carries { before: {...}, after: {...} } limited to
+  // the fields that actually changed (FIX F1). For newsletter actions it carries
+  // a hashed email and never the address itself. A global redaction list is
+  // applied before write.
+  metadata     Json?
+  changeReason String? @db.VarChar(255) // mandatory on edit and soft-delete
+
+  ipHash    String?  @db.VarChar(64)
+  userAgent String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([targetType, targetId]) // "show this student's history"
+  @@map("audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// INFRASTRUCTURE (cPanel: no Redis)
+// ---------------------------------------------------------------------------
+
+// Replaces Redis for rate limiting. A fixed-window counter keyed by a hashed
+// bucket identifier (ip:endpoint, email:endpoint, token:endpoint). At this
+// scale — a few hundred students, a handful of staff — this is comfortably
+// adequate. Swapping to Redis later means reimplementing one interface.
+model RateLimit {
+  id          String   @id @default(cuid())
+  bucketKey   String   @db.VarChar(64) // HMAC of the identifier + endpoint
+  windowStart DateTime
+  count       Int      @default(0)
+  expiresAt   DateTime
+
+  @@unique([bucketKey, windowStart])
+  @@index([expiresAt]) // cron purge
+  @@map("rate_limits")
+}
+
+// Single-row-per-job ledger so the cron endpoint is idempotent and a missed
+// run is visible rather than silent. Passenger gives us no worker process, so
+// scheduled work is HTTP-triggered and must be safe to call twice.
+model JobRun {
+  id         String    @id @default(cuid())
+  jobName    String    @db.VarChar(60)
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  status     String    @db.VarChar(20) // running | ok | failed
+  affected   Int       @default(0)
+  error      String?   @db.Text
+
+  @@index([jobName, startedAt])
+  @@map("job_runs")
+}
