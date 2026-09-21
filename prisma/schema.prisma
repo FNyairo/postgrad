@@ -9,6 +9,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  // The query engine is a platform-specific native binary, and the build host
+  // is not the deploy host. The cPanel/CloudLinux server reports itself to
+  // Prisma as debian-openssl-1.1.x — confirmed from its own error, not
+  // inferred, because "CloudLinux is RHEL-based" turns out not to predict what
+  // Prisma detects. The 3.0.x variant is kept as headroom for an OpenSSL
+  // upgrade on that host; Prisma selects the right one at runtime.
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -118,6 +125,11 @@ model Taxonomy {
   @@map("taxonomy")
 }
 
+enum TokenPurpose {
+  SHARE
+  ACCOUNT_SETUP
+}
+
 enum TaxonomyKind {
   PROGRAMME
   DEGREE_LEVEL
@@ -140,6 +152,11 @@ model StaffUser {
   totpSecretEnc String?  @db.VarChar(255)
   totpEnabled   Boolean  @default(false)
 
+  // Read-only roles may look at the register without being able to take a
+  // copy away; export is therefore a per-account grant, not a role property.
+  // Ignored for COORDINATOR/SUPER_ADMIN, who can always export.
+  allowExport Boolean @default(false)
+
   mustChangePassword Boolean   @default(true) // seed account lands here
   failedLogins       Int       @default(0)
   lockedUntil        DateTime?
@@ -160,6 +177,10 @@ enum Role {
   COORDINATOR
   CHAIRPERSON
   SUPER_ADMIN
+  // Read-only access to the register: counts, search, filter, record detail.
+  // No edit, no soft-delete, no share tokens, no staff management. Export is
+  // granted per account via StaffUser.allowExport, not by the role.
+  VIEWER
 }
 
 // FIX F5: was `recoveryCodes String[]`, which is PostgreSQL-only in Prisma and
@@ -203,6 +224,12 @@ model ShareToken {
   id          String    @id @default(cuid())
   tokenHash   String    @unique @db.VarChar(64) // SHA-256 of ≥32 random bytes
   label       String    @db.VarChar(120)
+
+  // Account-setup links reuse this table rather than getting one of their own
+  // — same shape (hashed single-use token, expiry, revocation), different
+  // meaning. The consuming flow is not built yet; the column exists so the
+  // MySQL migration is one trip to phpMyAdmin rather than two.
+  purpose TokenPurpose @default(SHARE)
   role        Role      @default(CHAIRPERSON)
   allowExport Boolean   @default(false)
   expiresAt   DateTime

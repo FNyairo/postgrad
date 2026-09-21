@@ -1,0 +1,61 @@
+.footer {
+  margin-block-start: clamp(2rem, 1.5rem + 3vw, 4rem);
+  padding-block: 1.5rem;
+  padding-inline: max(1rem, env(safe-area-inset-left));
+  padding-block-end: max(1.5rem, env(safe-area-inset-bottom));
+  border-block-start: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.inner {
+  inline-size: var(--col);
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+
+.org {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  margin-inline-start: auto;
+}
+
+.link,
+.staffLink {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--tap-target);
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Last, quietest, and never a button — the public page is for students. */
+.staffLink {
+  color: var(--ink-3);
+}
+
+.link:hover,
+.staffLink:hover {
+  color: var(--forest);
+}
+
+.link:focus-visible,
+.staffLink:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}

@@ -11,3 +11,6 @@ AdobeStock_*.jpeg
 /assets/_preview/
 /Claude outputs/
 PGSTS-Copy-Deck-for-Review.docx
+
+# Built deployment bundles — not source
+/_deploy/

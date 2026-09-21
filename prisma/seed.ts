@@ -41,7 +41,7 @@ import { argon2Hasher } from "@pgsts/adapter-argon2";
 const prisma = new PrismaClient();
 
 type SeedAccount = {
-  role: "SUPER_ADMIN" | "COORDINATOR";
+  role: "SUPER_ADMIN" | "COORDINATOR" | "VIEWER";
   name: string;
   envEmailKey: string;
   envPasswordKey: string;
@@ -62,6 +62,18 @@ const STAFF_ACCOUNTS: SeedAccount[] = [
     envEmailKey: "SEED_COORDINATOR_EMAIL",
     envPasswordKey: "SEED_COORDINATOR_PASSWORD",
     defaultEmail: "coordinator@embuni.ac.ke",
+  },
+  {
+    // Head of department: read-only by default. VIEWER sees the register,
+    // search, filter and record detail, but cannot edit, soft-delete, issue
+    // share tokens or manage accounts. Export is off unless the account is
+    // granted it (staff_users.allowExport) — looking at a register of personal
+    // data and taking a copy away are separate decisions.
+    role: "VIEWER",
+    name: "Head of Department",
+    envEmailKey: "SEED_HOD_EMAIL",
+    envPasswordKey: "SEED_HOD_PASSWORD",
+    defaultEmail: "hod@embuni.ac.ke",
   },
 ];
 

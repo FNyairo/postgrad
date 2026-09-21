@@ -1,0 +1,39 @@
+.page {
+  min-block-size: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  padding-block: clamp(1.5rem, 1rem + 2vw, 3rem);
+  padding-inline: max(1rem, env(safe-area-inset-left));
+}
+
+.inner {
+  inline-size: var(--col);
+  margin-inline: auto;
+  display: grid;
+  gap: clamp(1.25rem, 1rem + 1vw, 2rem);
+}
+
+.header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--step-2);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  max-inline-size: 52ch;
+  text-wrap: pretty;
+}

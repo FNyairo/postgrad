@@ -1,0 +1,139 @@
+.page {
+  min-block-size: 100dvh;
+  padding: clamp(1.25rem, 1rem + 2vw, 2.5rem) clamp(1rem, 0.75rem + 2vw, 2.5rem);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block-end: 1rem;
+  border-block-end: 1px solid var(--line);
+}
+
+.identity {
+  display: grid;
+  gap: 0.25rem;
+  min-inline-size: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--step-2);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--brass);
+  background: var(--brass-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action,
+.signOut {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--tap-target);
+  padding-inline: 1rem;
+  font-family: inherit;
+  font-size: max(16px, var(--step--1));
+  font-weight: 600;
+  color: var(--forest);
+  background: none;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.action:hover,
+.signOut:hover {
+  border-color: var(--forest);
+}
+
+.action:focus-visible,
+.signOut:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+}
+
+.count {
+  margin: 1.25rem 0 0;
+  font-size: var(--step-0);
+  color: var(--ink-2);
+}
+
+.tableWrap {
+  margin-block-start: 1rem;
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.table th {
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--ink-2);
+  background: var(--surface-2);
+  border-block-end: 1px solid var(--line);
+}
+
+.table tbody tr + tr td {
+  border-block-start: 1px solid var(--line);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  padding-block: 2rem;
+  text-align: center;
+  color: var(--ink-3);
+}

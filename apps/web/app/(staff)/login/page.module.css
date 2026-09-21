@@ -1,0 +1,124 @@
+.page {
+  min-block-size: 100dvh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: clamp(1.5rem, 1rem + 3vw, 3rem) 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+.card {
+  inline-size: min(100%, 24rem);
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+}
+
+.head {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--step-2);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.sub {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: var(--step-0);
+  font-weight: 600;
+}
+
+.input {
+  inline-size: 100%;
+  min-block-size: var(--tap-target);
+  padding: 0.7rem 0.85rem;
+  font-family: inherit;
+  font-size: max(16px, var(--step-0));
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 1px;
+  border-color: var(--forest);
+}
+
+.error {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.5;
+  color: #B3261E;
+}
+
+.submit {
+  min-block-size: 52px;
+  font-family: inherit;
+  font-size: max(16px, var(--step-0));
+  font-weight: 600;
+  color: var(--surface);
+  background: var(--forest);
+  border: 1px solid var(--forest);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--forest-2);
+}
+
+.submit:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.back {
+  margin: 0;
+  text-align: center;
+}
+
+.backLink {
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.backLink:hover {
+  color: var(--forest);
+}
+
+.backLink:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}

@@ -1,5 +1,6 @@
 import "server-only";
 import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { createHash } from "node:crypto";
 import { issueSession, isSessionValid, hashSessionToken } from "@pgsts/core";
 import { sessionRepo, staffUserRepo } from "@pgsts/adapter-prisma";
@@ -68,4 +69,24 @@ export async function destroyStaffSession() {
   const token = jar.get(SESSION_COOKIE)?.value;
   if (token) await sessionRepo.revoke(hashSessionToken(token));
   jar.delete(SESSION_COOKIE);
+}
+
+/**
+ * Guard for every staff page except the password page itself.
+ *
+ * Sends a signed-out visitor to /login, and a visitor still on the password
+ * their account was created with to /account/password. Without this second
+ * hop, `mustChangePassword` is only a column: the seed sets it, prints a
+ * temporary password to a terminal, and nothing ever forces a change. With
+ * TOTP deferred, that change is the only thing standing between that printed
+ * string and permanent access to the register.
+ *
+ * The password page must call getCurrentStaffUser() directly instead, or it
+ * would redirect to itself forever.
+ */
+export async function requireStaffUser() {
+  const user = await getCurrentStaffUser();
+  if (!user) redirect("/login");
+  if (user.mustChangePassword) redirect("/account/password");
+  return user;
 }

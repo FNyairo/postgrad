@@ -1,15 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createHash } from "node:crypto";
 import { studentRegistrationSchema } from "@pgsts/schema";
-import { slugify, computeDraftRetentionUntil } from "@pgsts/core";
-import { studentRepo, DuplicateRegistrationError } from "@pgsts/adapter-prisma";
-import { institution } from "@pgsts/config";
-
-function hashIp(ip: string): string {
-  const pepper = process.env.IP_HASH_PEPPER;
-  if (!pepper) throw new Error("IP_HASH_PEPPER is not set");
-  return createHash("sha256").update(pepper).update(ip).digest("hex");
-}
+import { DuplicateRegistrationError } from "@pgsts/adapter-prisma";
+import { registerStudent } from "@/lib/registerStudent";
 
 // Rate limiting (RateLimit table / MySQL, per 01-technical-proposal.md §1)
 // and CSRF (double-submit cookie, per §4) are not wired into this handler
@@ -33,29 +25,7 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
   try {
-    const student = await studentRepo.create({
-      fullName: input.fullName,
-      regNumber: input.regNumber,
-      email: input.email,
-      phone: input.phone,
-      programme: input.programme.raw,
-      programmeSlug: slugify(input.programme.slug || input.programme.raw),
-      degreeLevel: input.degreeLevel.raw,
-      degreeLevelSlug: slugify(input.degreeLevel.slug || input.degreeLevel.raw),
-      yearAdmission: input.admissionYear,
-      programmeDurationYears: null, // resolved from Taxonomy at submit — taxonomy lookup not wired up yet
-      researchTitle: input.researchTitle,
-      supervisors: input.supervisors.join("; "),
-      researchStage: input.stage.raw,
-      researchStageSlug: slugify(input.stage.slug || input.stage.raw),
-      noticeAcknowledgedAt: new Date(),
-      noticeVersion: institution.noticeVersion,
-      lawfulBasis: institution.lawfulBasisMode,
-      retentionUntil: computeDraftRetentionUntil(input.admissionYear, null),
-      retentionBasis: "derived:admission+duration+grace+5y",
-      submissionIpHash: hashIp(ip),
-      userAgentHash: null,
-    });
+    const student = await registerStudent(input, ip);
 
     return NextResponse.json({ id: student.id }, { status: 201 });
   } catch (err) {

@@ -2,7 +2,14 @@ import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { CollapsibleCard } from "@/components/landing/CollapsibleCard";
 import { BottomCTA } from "@/components/landing/BottomCTA";
+import SiteFooter from "@/components/landing/SiteFooter";
 import styles from "./page.module.css";
+
+// The footer reads the staff session cookie so it can offer a signed-in
+// member a way back to the dashboard. Reading cookies opts the whole route
+// out of static prerendering — see the note in SiteFooter.tsx if the cost of
+// rendering this page per request ever outweighs that convenience.
+export const dynamic = "force-dynamic";
 
 // Streamlined, mobile-first landing page. Ported from the reviewed static
 // design (docs/design/landing-preview.html), cut from six always-visible
@@ -131,6 +138,8 @@ export default function LandingPage() {
       </section>
 
       <BottomCTA />
+
+      <SiteFooter />
     </main>
   );
 }

@@ -1,31 +1,42 @@
-"use client";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { institution } from "@pgsts/config";
+import { getCurrentStaffUser } from "@/lib/session";
+import LoginForm from "./LoginForm";
+import styles from "./page.module.css";
 
-import { useActionState } from "react";
-import { loginAction, type LoginState } from "./actions";
+export const metadata: Metadata = {
+  title: "Staff login — Postgraduate Register",
+  // Staff pages have no business in search results.
+  robots: { index: false, follow: false },
+};
 
-const initialState: LoginState = { error: null };
+export const dynamic = "force-dynamic";
 
-export default function StaffLoginPage() {
-  const [state, formAction, pending] = useActionState(loginAction, initialState);
+export default async function StaffLoginPage() {
+  // Following the footer link while already signed in should go where the
+  // person actually wants to be, rather than asking for a password again.
+  const user = await getCurrentStaffUser().catch(() => null);
+  if (user) redirect(user.mustChangePassword ? "/account/password" : "/dashboard");
 
   return (
-    <main style={{ maxWidth: 360, margin: "4rem auto", fontFamily: "system-ui" }}>
-      <h1>Staff login</h1>
-      <form action={formAction} style={{ display: "grid", gap: "0.75rem" }}>
-        <label>
-          Email
-          <input name="email" type="email" required autoComplete="username" />
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" required autoComplete="current-password" />
-        </label>
-        {state.error && <p role="alert" style={{ color: "#B3261E" }}>{state.error}</p>}
-        <button type="submit" disabled={pending}>
-          {pending ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
-      {/* TOTP step lands here once enrolment/verification is built. */}
+    <main className={styles.page}>
+      <div className={styles.card}>
+        <div className={styles.head}>
+          <h1 className={styles.title}>Staff login</h1>
+          <p className={styles.sub}>
+            {institution.departmentName}, {institution.universityName}
+          </p>
+        </div>
+
+        <LoginForm />
+
+        <p className={styles.back}>
+          <a className={styles.backLink} href="/">
+            Back to the home page
+          </a>
+        </p>
+      </div>
     </main>
   );
 }

@@ -35,7 +35,10 @@ export async function GET() {
   if (!staffUser) {
     return NextResponse.json({ error: "Not signed in." }, { status: 401 });
   }
-  if (!canExportRegister(staffUser.role)) {
+  // Read-only roles need an explicit per-account grant to take a copy away;
+  // coordinators and above always may. Passing allowExport here is what makes
+  // that distinction real rather than advisory.
+  if (!canExportRegister(staffUser.role, staffUser.allowExport)) {
     return NextResponse.json({ error: "Your role does not have export access." }, { status: 403 });
   }
 
