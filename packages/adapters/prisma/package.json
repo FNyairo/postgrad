@@ -1,0 +1,8 @@
+{
+  "name": "@pgsts/adapter-prisma",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Repo port implementations backed by Prisma/MySQL — the cPanel path.",
+  "main": "src/index.ts",
+  "dependencies": { "@prisma/client": "^6.1.0" }
+}

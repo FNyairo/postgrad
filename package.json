@@ -1,0 +1,24 @@
+{
+  "name": "pgsts",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Postgraduate Student Tracking System — Department of Education",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev -w apps/web",
+    "build": "npm run build -w apps/web",
+    "lint": "eslint .",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:deploy": "prisma migrate deploy"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "eslint": "^9.15.0",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "vitest": "^2.1.0",
+    "prisma": "^6.1.0"
+  }
+}

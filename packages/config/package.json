@@ -1,0 +1,8 @@
+{
+  "name": "@pgsts/config",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Every department-specific string in one place — see docs/kickoff/02-repo-structure.md.",
+  "main": "src/institution.ts",
+  "types": "src/institution.ts"
+}
