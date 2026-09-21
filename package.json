@@ -2,8 +2,12 @@
   "name": "pgsts",
   "private": true,
   "version": "0.1.0",
-  "description": "Postgraduate Student Tracking System — Department of Education",
-  "workspaces": ["apps/*", "packages/*"],
+  "description": "Postgraduate Student Tracking System \u2014 Department of Education",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "packages/adapters/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w apps/web",
     "build": "npm run build -w apps/web",

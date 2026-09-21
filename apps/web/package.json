@@ -15,7 +15,10 @@
     "zod": "^3.23.0",
     "@pgsts/core": "*",
     "@pgsts/schema": "*",
-    "@pgsts/config": "*"
+    "@pgsts/config": "*",
+    "@hookform/resolvers": "^3.9.0",
+    "@pgsts/adapter-prisma": "*",
+    "@pgsts/adapter-argon2": "*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

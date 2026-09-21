@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Design preview of the Postgraduate Student Register public landing page (Department of Education, University of Embu). For departmental review only — this is not the live registration system.">
+<title>Postgraduate Student Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --paper:      #F7F6F2;
+    --surface:    #FFFFFF;
+    --surface-2:  #F0EFE8;
+    --ink:        #14201A;
+    --ink-2:      #4A5A52;
+    --ink-3:      #6E7D74;
+    --forest:     #1E4D3B;
+    --forest-2:   #2C6B52;
+    --forest-ghost: #E7EEE9;
+    --brass:      #9C6F25;
+    --brass-soft: #F3EADB;
+    --line:       #DEDCD4;
+    --line-2:     #C9C7BD;
+    --footer-bg:  #1E4D3B;
+    --radius:     3px;
+    --shadow:     0 1px 2px rgba(20,32,26,.06), 0 8px 24px -12px rgba(20,32,26,.16);
+
+    --col:        min(100%, 68ch);
+    --wide:       min(100%, 1120px);
+
+    --step--1: clamp(.78rem, .76rem + .1vw, .84rem);
+    --step-0:  clamp(1rem, .97rem + .15vw, 1.08rem);
+    --step-1:  clamp(1.2rem, 1.12rem + .35vw, 1.4rem);
+    --step-2:  clamp(1.45rem, 1.3rem + .7vw, 1.9rem);
+    --step-3:  clamp(1.85rem, 1.55rem + 1.4vw, 2.7rem);
+    --step-4:  clamp(2.25rem, 1.7rem + 2.6vw, 3.9rem);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #101613;
+      --surface:    #18201C;
+      --surface-2:  #1E2723;
+      --ink:        #E9EBE6;
+      --ink-2:      #A3B2A8;
+      --ink-3:      #84968B;
+      --forest:     #62A588;
+      --forest-2:   #7CBBA0;
+      --forest-ghost: #1B2B23;
+      --brass:      #D9AC66;
+      --brass-soft: #2A2317;
+      --line:       #2A342E;
+      --line-2:     #3A463F;
+      --footer-bg:  #16261F;
+      --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #101613;
+    --surface:    #18201C;
+    --surface-2:  #1E2723;
+    --ink:        #E9EBE6;
+    --ink-2:      #A3B2A8;
+    --ink-3:      #84968B;
+    --forest:     #62A588;
+    --forest-2:   #7CBBA0;
+    --forest-ghost: #1B2B23;
+    --brass:      #D9AC66;
+    --brass-soft: #2A2317;
+    --line:       #2A342E;
+    --line-2:     #3A463F;
+    --footer-bg:  #16261F;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: Newsreader, Georgia, "Times New Roman", serif;
+    font-weight: 500;
+    line-height: 1.14;
+    text-wrap: balance;
+    margin: 0;
+    letter-spacing: -.012em;
+  }
+
+  p { margin: 0; }
+  a { color: inherit; }
+
+  :where(a, button, input, summary):focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* ---------- structure ---------- */
+
+  .band { padding-inline: 16px; }
+  .band > * { margin-inline: auto; }
+  .wide { width: var(--wide); }
+  .col  { width: var(--col); }
+
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 0;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0;
+  }
+
+  /* ---------- preview notice ---------- */
+
+  .notice {
+    background: var(--brass-soft);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 16px;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .notice > div {
+    width: var(--wide);
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    align-items: baseline;
+  }
+  .notice b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--forest);
+  }
+  .hero picture, .hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(10,22,16,.30) 0%, rgba(10,22,16,.58) 46%, rgba(10,22,16,.86) 100%);
+  }
+  .hero-inner {
+    width: var(--wide);
+    margin-inline: auto;
+    padding-block: clamp(52px, 11vw, 116px);
+    padding-inline: 16px;
+    color: #F4F6F3;
+    display: grid;
+    gap: 22px;
+    max-width: 100%;
+  }
+  .hero .eyebrow { color: #C7D8CD; }
+  .hero h1 {
+    font-size: var(--step-4);
+    max-width: 17ch;
+    color: #FFFFFF;
+  }
+  .hero-lead {
+    max-width: 52ch;
+    color: #DDE6DF;
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .btn {
+    font: inherit;
+    font-weight: 600;
+    font-size: var(--step--1);
+    letter-spacing: .01em;
+    padding: 13px 22px;
+    min-height: 48px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .btn-primary { background: var(--brass); color: #1A1204; border-color: var(--brass); }
+  .btn-primary:hover { background: #B9883A; border-color: #B9883A; }
+  .btn-ghost-light { background: transparent; color: #F4F6F3; border-color: rgba(244,246,243,.5); }
+  .btn-ghost-light:hover { background: rgba(244,246,243,.12); border-color: #F4F6F3; }
+  .btn-solid { background: var(--forest); color: #FFFFFF; border-color: var(--forest); }
+  .btn-solid:hover { background: var(--forest-2); border-color: var(--forest-2); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line-2); }
+  .btn-ghost:hover { border-color: var(--ink-2); background: var(--surface); }
+
+  .hero-trust {
+    font-size: var(--step--1);
+    color: #C7D8CD;
+    border-top: 1px solid rgba(244,246,243,.22);
+    padding-top: 16px;
+    max-width: 58ch;
+  }
+  .hero-trust a { color: #FFFFFF; text-underline-offset: 3px; }
+
+  /* ---------- stats ---------- */
+
+  .stats-wrap { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border-inline: 1px solid var(--line);
+  }
+  .stat {
+    background: var(--surface);
+    padding: 22px 18px;
+  }
+  .stat-n {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: var(--step-3);
+    font-weight: 500;
+    color: var(--forest);
+    line-height: 1.05;
+    display: block;
+  }
+  .stat-l {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    margin-top: 6px;
+    display: block;
+  }
+  .stats-note {
+    padding-block: 14px 22px;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+  @media (min-width: 760px) {
+    .stats { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* ---------- generic section ---------- */
+
+  section { padding-block: clamp(46px, 7vw, 84px); }
+  .head { display: grid; gap: 12px; margin-bottom: 34px; }
+  .head h2 { font-size: var(--step-3); max-width: 20ch; }
+  .head p { color: var(--ink-2); max-width: 56ch; }
+
+  .prose { display: grid; gap: 18px; color: var(--ink-2); }
+  .prose strong { color: var(--ink); font-weight: 600; }
+  .prose h3 {
+    font-size: var(--step-1);
+    color: var(--ink);
+    margin-top: 12px;
+  }
+
+  /* ---------- about: split ---------- */
+
+  .split { display: grid; gap: 40px; align-items: start; }
+  @media (min-width: 900px) {
+    .split { grid-template-columns: 1.05fr .95fr; gap: 56px; }
+  }
+
+  .fields {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .fields-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .fields-head strong { font-weight: 600; font-size: var(--step--1); }
+  .fields-group { border-bottom: 1px solid var(--line); padding: 16px 20px; }
+  .fields-group:last-child { border-bottom: 0; }
+  .fields-group .eyebrow { margin-bottom: 10px; }
+  .fields ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 7px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .82rem;
+    color: var(--ink);
+  }
+  .fields ol li { display: flex; gap: 10px; align-items: baseline; }
+  .fields ol li span {
+    color: var(--ink-3);
+    font-size: .72rem;
+    flex: none;
+    width: 1.6em;
+  }
+  .excluded {
+    padding: 16px 20px;
+    background: var(--surface-2);
+    border-top: 1px solid var(--line);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .excluded .eyebrow { margin-bottom: 8px; }
+
+  /* ---------- photo band ---------- */
+
+  .photoband {
+    position: relative;
+    isolation: isolate; /* without this the z-index:-2 image sits behind the band's own background */
+    overflow: hidden;
+    background: var(--forest);
+  }
+  .photoband picture, .photoband img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; max-width: 100%;
+    object-fit: cover; z-index: -2;
+  }
+  .photoband::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(10,22,16,.52), rgba(10,22,16,.80));
+  }
+  .photoband-inner {
+    width: var(--wide);
+    margin-inline: auto;
+    padding-block: clamp(44px, 8vw, 78px);
+    padding-inline: 16px;
+    color: #F4F6F3;
+    display: grid;
+    gap: 14px;
+    max-width: 100%;
+  }
+  .photoband h2 { font-size: var(--step-3); color: #FFFFFF; max-width: 20ch; }
+  .photoband p { color: #DDE6DF; max-width: 54ch; }
+  .photoband .eyebrow { color: #C7D8CD; }
+
+  /* ---------- benefit cards ---------- */
+
+  .benefits {
+    display: grid;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  @media (min-width: 680px) { .benefits { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1000px) { .benefits { grid-template-columns: repeat(3, 1fr); } }
+  .benefit {
+    background: var(--surface);
+    padding: 26px 22px;
+    display: grid;
+    gap: 9px;
+    align-content: start;
+  }
+  .benefit h3 { font-size: var(--step-1); }
+  .benefit p { color: var(--ink-2); font-size: var(--step--1); line-height: 1.6; }
+
+  /* ---------- trust ---------- */
+
+  .trust { display: grid; gap: 26px; }
+  @media (min-width: 720px) { .trust { grid-template-columns: 1fr 1fr; gap: 32px 44px; } }
+  .trust-item {
+    display: grid;
+    gap: 8px;
+    padding-top: 18px;
+    border-top: 2px solid var(--forest);
+  }
+  .trust-item h3 { font-size: var(--step-1); }
+  .trust-item p { color: var(--ink-2); font-size: var(--step--1); }
+  .badges {
+    margin-top: 34px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .badge {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .04em;
+    padding: 7px 12px;
+    border: 1px solid var(--line-2);
+    border-radius: 100px;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  .badge:hover { border-color: var(--forest); color: var(--forest); }
+
+  /* ---------- newsletter ---------- */
+
+  .news-grid { display: grid; gap: 34px; align-items: start; }
+  @media (min-width: 900px) { .news-grid { grid-template-columns: 1fr 1fr; gap: 52px; } }
+
+  .news-photo {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    line-height: 0;
+  }
+  .news-photo img { width: 100%; height: auto; max-width: 100%; display: block; }
+
+  form { display: grid; gap: 16px; }
+  .field { display: grid; gap: 6px; }
+  label { font-size: var(--step--1); font-weight: 600; color: var(--ink); }
+  .opt { font-weight: 400; color: var(--ink-3); }
+  input[type="email"], input[type="text"] {
+    font: inherit;
+    font-size: 1rem;
+    padding: 13px 14px;
+    min-height: 48px;
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    width: 100%;
+  }
+  input::placeholder { color: var(--ink-3); }
+  input:focus { border-color: var(--forest); }
+
+  .radios { display: flex; flex-wrap: wrap; gap: 8px; }
+  .radios label {
+    font-weight: 400;
+    font-size: var(--step--1);
+    border: 1px solid var(--line-2);
+    border-radius: 100px;
+    padding: 9px 15px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .radios input { accent-color: var(--forest); width: 16px; height: 16px; }
+  .radios label:has(input:checked) { border-color: var(--forest); background: var(--forest-ghost); }
+
+  .consent {
+    display: flex;
+    gap: 11px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 15px;
+  }
+  .consent input { margin-top: 3px; width: 18px; height: 18px; flex: none; accent-color: var(--forest); }
+  .consent label { font-weight: 400; font-size: var(--step--1); color: var(--ink-2); line-height: 1.55; }
+
+  .form-msg {
+    font-size: var(--step--1);
+    padding: 13px 15px;
+    border-radius: var(--radius);
+    background: var(--forest-ghost);
+    border: 1px solid var(--forest);
+    color: var(--ink);
+  }
+
+  /* ---------- steps ---------- */
+
+  .steps { display: grid; gap: 0; counter-reset: s; }
+  .step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    padding-block: 22px;
+    border-top: 1px solid var(--line);
+    align-items: start;
+  }
+  .step:last-child { border-bottom: 1px solid var(--line); }
+  .step-n {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--brass);
+    border: 1px solid var(--line-2);
+    border-radius: 100px;
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    flex: none;
+  }
+  .step h3 { font-size: var(--step-1); margin-bottom: 5px; }
+  .step p { color: var(--ink-2); font-size: var(--step--1); max-width: 56ch; }
+
+  /* ---------- capability lists ---------- */
+
+  .caps { display: grid; gap: 30px; }
+  @media (min-width: 760px) { .caps { grid-template-columns: 1fr 1fr; gap: 44px; } }
+  .caps ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; }
+  .caps li {
+    padding-block: 11px;
+    border-top: 1px solid var(--line);
+    font-size: var(--step--1);
+    display: flex;
+    gap: 11px;
+    align-items: baseline;
+  }
+  .caps li:last-child { border-bottom: 1px solid var(--line); }
+  .mark { font-family: "IBM Plex Mono", monospace; font-size: .8rem; flex: none; }
+  .mark-now { color: var(--forest); }
+  .mark-later { color: var(--ink-3); }
+  .caps .later li { color: var(--ink-3); }
+
+  /* ---------- closing cta ---------- */
+
+  .cta-wrap { background: var(--surface); border-top: 1px solid var(--line); }
+  .cta { display: grid; gap: 30px; align-items: center; }
+  @media (min-width: 820px) { .cta { grid-template-columns: 300px 1fr; gap: 48px; } }
+  .cta-photo {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    line-height: 0;
+    max-width: 300px;
+  }
+  .cta-photo img { width: 100%; height: auto; max-width: 100%; display: block; }
+  .cta h2 { font-size: var(--step-3); }
+  .cta p { color: var(--ink-2); margin-block: 12px 22px; max-width: 46ch; }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    background: var(--footer-bg);
+    color: #DDE6DF;
+    padding-block: clamp(40px, 6vw, 60px);
+  }
+  footer .wide { display: grid; gap: 26px; }
+  footer h2 { color: #FFFFFF; font-size: var(--step-1); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 10px 26px; font-size: var(--step--1); }
+  footer nav a { color: #DDE6DF; text-underline-offset: 3px; }
+  footer nav a:hover { color: #FFFFFF; }
+  .compliance {
+    font-size: var(--step--1);
+    color: #BACBC0;
+    border-top: 1px solid rgba(244,246,243,.2);
+    padding-top: 22px;
+    max-width: 68ch;
+  }
+  .ph {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .85em;
+    background: rgba(244,246,243,.14);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .prose .ph, .notice .ph, .fields .ph {
+    background: var(--brass-soft);
+    color: var(--ink-2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="notice">
+  <div>
+    <b>Design preview.</b>
+    <span>Placeholder values are shown like <span class="ph">[THIS]</span>. Figures below are examples, not real counts. Nothing on this page collects data.</span>
+    <span>Two wording decisions are still open &mdash; see Notes A and B in the copy deck.</span>
+  </div>
+</div>
+
+<header class="hero">
+  <picture>
+    <source type="image/avif" srcset="assets/hero-800.avif 800w, assets/hero-1200.avif 1200w, assets/hero-1800.avif 1800w" sizes="100vw">
+    <img src="assets/hero-1200.jpg" srcset="assets/hero-800.jpg 800w, assets/hero-1200.jpg 1200w" sizes="100vw" alt="" width="1800" height="787" fetchpriority="high" decoding="async">
+  </picture>
+  <div class="hero-inner">
+    <p class="eyebrow">University of Embu &middot; Department of Education</p>
+    <h1>Postgraduate Student Register</h1>
+    <p class="hero-lead">
+      The official record of postgraduate students in the Department of Education.
+      Register once, and the department can support your progress, reach you about
+      things that matter, and process your milestones without delay.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#register" data-preview>Register as a student</a>
+      <a class="btn btn-ghost-light" href="#staff" data-preview>Staff login</a>
+    </div>
+    <p class="hero-trust">
+      Your information is protected under the Kenya Data Protection Act, 2019.
+      <a href="#protection">Read how we protect it</a>.
+    </p>
+  </div>
+</header>
+
+<div class="stats-wrap">
+  <div class="band">
+    <div class="wide stats">
+      <div class="stat"><span class="stat-n">248</span><span class="stat-l">Registered students</span></div>
+      <div class="stat"><span class="stat-n">12</span><span class="stat-l">New this week</span></div>
+      <div class="stat"><span class="stat-n">9</span><span class="stat-l">Programmes</span></div>
+      <div class="stat"><span class="stat-n">6</span><span class="stat-l">Research stages</span></div>
+    </div>
+    <p class="stats-note wide">
+      These are counts only. No student&rsquo;s name or details ever appear on this page.
+      <strong style="color:var(--ink-2)">Figures shown are examples for this preview.</strong>
+    </p>
+  </div>
+</div>
+
+<section class="band" id="about">
+  <div class="wide split">
+    <div>
+      <div class="head">
+        <p class="eyebrow">About</p>
+        <h2>One accurate record, held securely by the department</h2>
+      </div>
+      <div class="prose">
+        <p>
+          This is the official register of postgraduate students in the Department of
+          Education. It keeps one accurate, current record for each student.
+        </p>
+        <p>
+          It replaces the shared spreadsheet the department has been using. That
+          spreadsheet worked, but it had real problems: anyone with the link could open
+          it, several versions circulated at once, and it was never clear which one was
+          current. A single secure system fixes all three.
+        </p>
+
+        <h3>Who can see your record</h3>
+        <p>One person, and no one else.</p>
+        <p>
+          The <strong>Postgraduate Coordinator</strong>, who maintains the register.
+        </p>
+        <p>
+          Students cannot see the register. You cannot see another student&rsquo;s
+          record, and no other student can see yours. Every time anyone opens the
+          register, the system records who it was and when.
+        </p>
+
+        <h3>What is coming later</h3>
+        <p>
+          Future versions will add proposal uploads, supervisor access, and progress
+          tracking through to defence. Those are not part of this version.
+        </p>
+      </div>
+    </div>
+
+    <div class="fields">
+      <div class="fields-head"><strong>What we store &mdash; ten fields, and nothing else</strong></div>
+      <div class="fields-group">
+        <p class="eyebrow">Section A &middot; Biodata</p>
+        <ol>
+          <li><span>01</span>Full name</li>
+          <li><span>02</span>Admission / registration number</li>
+          <li><span>03</span>Email address</li>
+          <li><span>04</span>Phone number</li>
+        </ol>
+      </div>
+      <div class="fields-group">
+        <p class="eyebrow">Section B &middot; Academic</p>
+        <ol>
+          <li><span>05</span>Programme</li>
+          <li><span>06</span>Degree level</li>
+          <li><span>07</span>Year of admission</li>
+        </ol>
+      </div>
+      <div class="fields-group">
+        <p class="eyebrow">Section C &middot; Research</p>
+        <ol>
+          <li><span>08</span>Research title</li>
+          <li><span>09</span>Supervisors</li>
+          <li><span>10</span>Current research stage</li>
+        </ol>
+      </div>
+      <div class="excluded">
+        <p class="eyebrow">What we never collect</p>
+        <p>
+          No national ID number, no date of birth, no photograph, no financial
+          information, no biometric data. We do not use your information for
+          advertising, we do not share it outside the department, and we never sell it.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="photoband">
+  <picture>
+    <source type="image/avif" srcset="assets/support-800.avif 800w, assets/support-1200.avif 1200w" sizes="100vw">
+    <img src="assets/support-800.jpg" srcset="assets/support-800.jpg 800w" sizes="100vw" alt="" width="1200" height="750" loading="lazy" decoding="async">
+  </picture>
+  <div class="photoband-inner">
+    <p class="eyebrow">Why it matters</p>
+    <h2>Why we&rsquo;re asking, and why it helps you</h2>
+    <p>Six things an accurate record actually changes for you.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wide">
+    <div class="benefits">
+      <div class="benefit">
+        <h3>Your progress is tracked accurately</h3>
+        <p>When your stage, title, and supervisors are current, your supervisors and the department can see where you are and support you properly.</p>
+      </div>
+      <div class="benefit">
+        <h3>You only tell us once</h3>
+        <p>Submit your details a single time. The department uses the same record for all internal coordination, so you are not asked for the same information again and again.</p>
+      </div>
+      <div class="benefit">
+        <h3>You hear about things that matter</h3>
+        <p>Your email address lets us tell you about seminars, deadlines, funding calls, and defence schedules. Nothing else.</p>
+      </div>
+      <div class="benefit">
+        <h3>Your rights are protected</h3>
+        <p>Under the Kenya Data Protection Act, 2019 you can ask for a copy of your record, ask us to correct it, or ask us to delete it. We respond within the time limits the law sets.</p>
+      </div>
+      <div class="benefit">
+        <h3>Fewer delays at milestones</h3>
+        <p>Accurate records mean less back-and-forth when you reach defence and graduation.</p>
+      </div>
+      <div class="benefit">
+        <h3>A connection after you graduate</h3>
+        <p>If you choose to opt in, we will invite you to alumni events, mentorship, and research collaborations after you finish.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="band" id="protection">
+  <div class="wide">
+    <div class="head">
+      <p class="eyebrow">Protection</p>
+      <h2>How we protect your information</h2>
+    </div>
+    <div class="trust">
+      <div class="trust-item">
+        <h3>Security</h3>
+        <p>
+          Your information travels to us over an encrypted connection using TLS&nbsp;1.3.
+          Security credentials for staff accounts are encrypted in our database. The
+          register itself is held on access-controlled systems.
+        </p>
+      </div>
+      <div class="trust-item">
+        <h3>Access control</h3>
+        <p>
+          Only the Postgraduate Coordinator can see your record. Every time the
+          register is opened, exported, or changed, the system records it.
+        </p>
+      </div>
+      <div class="trust-item">
+        <h3>Your rights</h3>
+        <p>
+          You can ask for a copy of your record, ask us to correct it, or ask us to
+          delete it. Contact our Data Protection Officer at
+          info@learning254.com, or use the Data Request form.
+          The law gives us seven days to respond to a request for a copy and fourteen
+          days to correct or delete.
+        </p>
+      </div>
+      <div class="trust-item">
+        <h3>How long we keep it</h3>
+        <p>
+          We keep your record until you graduate, and then for five more years. After
+          that it is deleted automatically.
+        </p>
+      </div>
+    </div>
+    <div class="badges">
+      <a class="badge" href="#" data-preview>Kenya Data Protection Act, 2019</a>
+      <a class="badge" href="#" data-preview>Privacy Notice</a>
+      <a class="badge" href="#" data-preview>Data Request form</a>
+      <a class="badge" href="#" data-preview>Contact the DPO</a>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="band" id="updates">
+  <div class="wide news-grid">
+    <div>
+      <div class="head" style="margin-bottom:22px">
+        <p class="eyebrow">Stay updated</p>
+        <h2>Stay informed about postgraduate and alumni activities</h2>
+        <p>
+          Occasional updates about seminars, funding opportunities, defence schedules,
+          and alumni events. We only email when we have something worth your time.
+        </p>
+      </div>
+      <div class="news-photo">
+        <picture>
+          <source type="image/avif" srcset="assets/alumni-800.avif 800w, assets/alumni-1200.avif 1200w" sizes="(min-width:900px) 46vw, 92vw">
+          <img src="assets/alumni-800.jpg" alt="Postgraduate students at a graduation ceremony" width="1200" height="750" loading="lazy" decoding="async">
+        </picture>
+      </div>
+    </div>
+
+    <form id="news-form" novalidate>
+      <div class="field">
+        <label for="news-email">Email address</label>
+        <input type="email" id="news-email" name="email" placeholder="you@example.ac.ke" autocomplete="email" autocapitalize="none" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="news-name">Full name <span class="opt">&mdash; optional</span></label>
+        <input type="text" id="news-name" name="name" autocomplete="name" autocapitalize="words">
+      </div>
+      <div class="field">
+        <span class="eyebrow" style="margin-bottom:2px">I am a <span style="text-transform:none;letter-spacing:0">&mdash; optional</span></span>
+        <div class="radios">
+          <label for="st-student"><input type="radio" id="st-student" name="status" value="student">Current postgraduate student</label>
+          <label for="st-alumni"><input type="radio" id="st-alumni" name="status" value="alumni">Alumni</label>
+          <label for="st-staff"><input type="radio" id="st-staff" name="status" value="staff">Staff</label>
+          <label for="st-other"><input type="radio" id="st-other" name="status" value="other">Other</label>
+        </div>
+      </div>
+      <div class="consent">
+        <input type="checkbox" id="news-consent" name="consent">
+        <label for="news-consent">
+          I agree to receive emails from the Department of Education about postgraduate
+          and alumni activities. I understand I can unsubscribe at any time, and that my
+          email address will only be used for this purpose.
+        </label>
+      </div>
+      <button class="btn btn-solid" type="submit" style="justify-self:start">Subscribe</button>
+      <p class="form-msg" id="news-msg" hidden role="status"></p>
+    </form>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="band">
+  <div class="wide split">
+    <div>
+      <div class="head">
+        <p class="eyebrow">Process</p>
+        <h2>How it works</h2>
+        <p>Four steps, in order. You are only involved in the first one.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div>
+            <h3>You submit your details</h3>
+            <p>One form, about ninety seconds, from any phone.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div>
+            <h3>Your record is stored securely</h3>
+            <p>Encrypted in transit, access-controlled, and logged.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div>
+            <h3>The Coordinator maintains the register</h3>
+            <p>Searching, filtering, and correcting records as needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="head">
+        <p class="eyebrow">Scope</p>
+        <h2>What the system does</h2>
+      </div>
+      <div class="caps">
+        <div>
+          <p class="eyebrow" style="margin-bottom:10px">Available now</p>
+          <ul>
+            <li><span class="mark mark-now">&#10003;</span>Student registration</li>
+            <li><span class="mark mark-now">&#10003;</span>Secure central register</li>
+            <li><span class="mark mark-now">&#10003;</span>Search and filter</li>
+            <li><span class="mark mark-now">&#10003;</span>Export for departmental reporting</li>
+            <li><span class="mark mark-now">&#10003;</span>Full access logging</li>
+            <li><span class="mark mark-now">&#10003;</span>Newsletter subscription</li>
+          </ul>
+        </div>
+        <div class="later">
+          <p class="eyebrow" style="margin-bottom:10px">Coming later</p>
+          <ul>
+            <li><span class="mark mark-later">&middot;</span>Proposal uploads</li>
+            <li><span class="mark mark-later">&middot;</span>Supervisor accounts</li>
+            <li><span class="mark mark-later">&middot;</span>Progress tracking</li>
+            <li><span class="mark mark-later">&middot;</span>Defence milestone tracking</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-wrap">
+  <section class="band" id="register">
+    <div class="wide cta">
+      <div class="cta-photo">
+        <picture>
+          <source type="image/avif" srcset="assets/portrait-760.avif">
+          <img src="assets/portrait-760.jpg" alt="A postgraduate student in academic dress" width="760" height="860" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <div>
+        <h2>Ready to register?</h2>
+        <p>It takes about ninety seconds, and you only do it once.</p>
+        <div class="actions">
+          <a class="btn btn-solid" href="#" data-preview>Register now</a>
+          <a class="btn btn-ghost" href="#" id="staff" data-preview>Staff login</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="band">
+    <div class="wide">
+      <h2>Department of Education, University of Embu</h2>
+      <nav>
+        <a href="#" data-preview>Privacy Notice</a>
+        <a href="#" data-preview>Data Request form</a>
+        <a href="#" data-preview>Contact the Data Protection Officer</a>
+        <a href="#" data-preview>Unsubscribe from updates</a>
+      </nav>
+      <p class="compliance">
+        This system is operated by the Department of Education,
+        University of Embu, in accordance with the Kenya Data
+        Protection Act, 2019. Data Protection Officer:
+        <span class="ph">[NAME]</span>, info@learning254.com.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // This is a design preview. Nothing here submits, stores, or transmits anything.
+  var msg = document.getElementById('news-msg');
+
+  document.getElementById('news-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    msg.textContent =
+      'Design preview — no subscription was created and no data left this page. ' +
+      'On the live site this would read: “Almost there. Please check your email and ' +
+      'click the confirmation link to complete your subscription.”';
+    msg.hidden = false;
+  });
+
+  document.querySelectorAll('[data-preview]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      msg.textContent =
+        'Design preview — this link is not wired up yet. In the built system it goes to ' +
+        (el.textContent.trim().toLowerCase()) + '.';
+      msg.hidden = false;
+      msg.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>
